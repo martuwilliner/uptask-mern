@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const usuarioSchema = new mongoose.Schema({
     nombre: {
@@ -28,6 +29,20 @@ const usuarioSchema = new mongoose.Schema({
 {
     timestamps: true
 });
+
+//Pre se ejecuta antes de guardar la BD  ---- hash password
+usuarioSchema.pre('save', async function(next) {
+    if(!this.isModified('password')) { //Si no se ha modificado el password que siga. No se ejecuta el hash sobre otro hash
+        next();
+    }
+   const salt = await bcrypt.genSalt(10);
+   this.password = await bcrypt.hash(this.password, salt);
+})
+
+usuarioSchema.methods.comprobarPassword = async function(passwordFormulario) {
+    return await bcrypt.compare(passwordFormulario, this.password);
+}
+
 
 const Usuario = mongoose.model("Usuario", usuarioSchema);
 

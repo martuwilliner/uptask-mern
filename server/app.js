@@ -6,6 +6,10 @@ import usuarios from './routes/usuarios.js';
 
 const app = express();
 
+//leer archivos json
+app.use(express.json());
+
+
 dotenv.config();
 
 conectarDB();
