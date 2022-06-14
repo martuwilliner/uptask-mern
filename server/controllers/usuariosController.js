@@ -126,4 +126,34 @@ const comprobarToken = async (req, res) => {
 
 }
 
-export { registrar, autenticar, confirmar, olvidePassword, comprobarToken};
+const nuevoPassword = async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+    const usuario = await Usuario.findOne({ token });
+    if (!usuario) {
+        const error = new Error('El usuario no existe');
+        return res.status(404).json({
+            msg: error.message
+        });
+    }
+
+    try{
+        usuario.password = password;
+        usuario.token = ''; //eliminar el token xq es de un solo uso
+        await usuario.save();
+        res.json({
+            msg: 'Tu contraseña ha sido restablecida'
+        })
+    }
+    catch(error){
+        console.log(error);
+    }
+
+}
+
+const perfil = async (req, res) => {
+    const { usuario } = req;
+    res.json(usuario);
+}
+
+export { registrar, autenticar, confirmar, olvidePassword, comprobarToken, nuevoPassword, perfil};
