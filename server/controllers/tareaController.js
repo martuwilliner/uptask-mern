@@ -62,10 +62,17 @@ const actualizarTarea = async (req, res) => {
         });
     }
 
-    try {
-        const tareaActualizada = await Tarea.findByIdAndUpdate(id, req.body, {new: true});
+    tarea.nombre = req.body.nombre || tarea.nombre;
+    tarea.descripcion = req.body.descripcion || tarea.descripcion;
+    tarea.fechaEntregada = req.body.fechaEntregada || tarea.fechaEntregada;
+    tarea.prioridad = req.body.prioridad || tarea.prioridad;
+    tarea.estado = req.body.estado || tarea.estado;
+
+
+    try{
+        const tareaActualizada = await tarea.save();
         res.json(tareaActualizada);
-    } catch (error) {
+    }catch (error) {
         return res.status(500).json({
             msg: "Error al actualizar tarea"
         });
@@ -90,12 +97,15 @@ const eliminarTarea = async (req, res) => {
     }
 
     try {
-        const tareaEliminada = await Tarea.findByIdAndDelete(id);
-        res.json(tareaEliminada);
+        await Tarea.deleteOne();
+        res.json({
+            msg: "Tarea eliminada"
+        });
+
     } catch (error) {
         return res.status(500).json({
             msg: "Error al eliminar tarea"
-        });
+        });        
     }
     
 };
